@@ -9,9 +9,44 @@ from allauth.account.utils import setup_user_email
 from rest_framework import serializers
 from rest_auth.serializers import PasswordResetSerializer
 
+from home.models import Subscription, App, Plan
+
 
 User = get_user_model()
 
+class CustomModelSerializer(serializers.ModelSerializer):
+    def _request(self):
+        request = self.context.get("request")
+        if (
+            request
+            and not isinstance(request, HttpRequest)
+            and hasattr(request, "_request")
+        ):
+            request = request._request
+        return request
+
+class AppSerializer(CustomModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+    subscription = serializers.SerializerMethodField()
+    
+    def get_subscription(self, obj):
+        return obj.subscription()
+        
+    class Meta:
+        model = App
+        fields = '__all__'
+        read_only_fields = ['screenshot', 'user']
+        
+class PlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Plan
+        fields = '__all__'
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscription
+        fields = '__all__'
+        read_only_fields = ['user']
 
 class SignupSerializer(serializers.ModelSerializer):
     class Meta:

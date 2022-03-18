@@ -1,12 +1,36 @@
-from rest_framework.authtoken.serializers import AuthTokenSerializer
-from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework import mixins
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet, ViewSet, GenericViewSet
 
 from home.api.v1.serializers import (
-    SignupSerializer,
-    UserSerializer,
+    SignupSerializer, AppSerializer, PlanSerializer,
+    UserSerializer, SubscriptionSerializer
 )
+from home.models import (
+    App,
+    Plan,
+    Subscription
+)
+
+
+class AppViewSet(ModelViewSet):
+    serializer_class = AppSerializer
+    queryset = App.objects.all()
+
+
+class PlanViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
+    serializer_class = PlanSerializer
+    queryset = Plan.objects.all()
+
+
+class SubscriptionViewSet(mixins.CreateModelMixin,
+                          mixins.RetrieveModelMixin,
+                          mixins.UpdateModelMixin,
+                          mixins.ListModelMixin, GenericViewSet):
+    serializer_class = SubscriptionSerializer
+    queryset = Subscription.objects.all()
 
 
 class SignupViewSet(ModelViewSet):

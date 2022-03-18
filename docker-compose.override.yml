@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3"
 
 services:
   web:
@@ -13,7 +13,7 @@ services:
       - "8000:${PORT}"
   postgres:
     environment:
-      POSTGRES_PASSWORD: <postgres_pwd>
+      POSTGRES_PASSWORD: mypostgressPass
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
